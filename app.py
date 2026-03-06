@@ -1,15 +1,10 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-import os
-from groq import Groq
 from streamlit_option_menu import option_menu
 
 # Page config
 st.set_page_config(page_title="School Management System", layout="wide")
-
-# Groq API
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Database connection
 conn = sqlite3.connect("school.db", check_same_thread=False)
@@ -35,6 +30,7 @@ else:
             ["Dashboard","Students","Teachers","Attendance","Marks","Fees","AI Assistant"]
         )
 
+    # ----------------- Dashboard -----------------
     if selected == "Dashboard":
         st.title("Dashboard")
         students = pd.read_sql("SELECT * FROM students", conn)
@@ -43,6 +39,7 @@ else:
         col1.metric("Total Students", len(students))
         col2.metric("Total Teachers", len(teachers))
 
+    # ----------------- Students -----------------
     if selected == "Students":
         st.title("Student Management")
         name = st.text_input("Student Name")
@@ -63,6 +60,7 @@ else:
         data = pd.read_sql("SELECT * FROM students", conn)
         st.dataframe(data)
 
+    # ----------------- Teachers -----------------
     if selected == "Teachers":
         st.title("Teacher Management")
         name = st.text_input("Teacher Name")
@@ -80,6 +78,7 @@ else:
         data = pd.read_sql("SELECT * FROM teachers", conn)
         st.dataframe(data)
 
+    # ----------------- Attendance -----------------
     if selected == "Attendance":
         st.title("Attendance")
         roll = st.number_input("Roll Number", min_value=1)
@@ -96,6 +95,7 @@ else:
         data = pd.read_sql("SELECT * FROM attendance", conn)
         st.dataframe(data)
 
+    # ----------------- Marks -----------------
     if selected == "Marks":
         st.title("Marks Management")
         roll = st.number_input("Roll Number", min_value=1)
@@ -113,6 +113,7 @@ else:
         data = pd.read_sql("SELECT * FROM marks", conn)
         st.dataframe(data)
 
+    # ----------------- Fees -----------------
     if selected == "Fees":
         st.title("Fee Management")
         roll = st.number_input("Roll Number", min_value=1)
@@ -130,13 +131,10 @@ else:
         data = pd.read_sql("SELECT * FROM fees", conn)
         st.dataframe(data)
 
+    # ----------------- AI Assistant Placeholder -----------------
     if selected == "AI Assistant":
         st.title("AI School Assistant")
-        question = st.text_input("Ask anything about education")
-
-        if st.button("Ask AI") and question:
-            chat_completion = client.chat.completions.create(
-                messages=[{"role":"user","content":question}],
-                model="llama-3.3-70b-versatile"
-            )
-            st.write(chat_completion.choices[0].message.content)
+        st.info("AI Assistant is not enabled in this deployment. You can integrate OpenAI or Groq later.")
+        question = st.text_input("Ask anything about education (currently disabled)")
+        if st.button("Ask AI"):
+            st.warning("AI Assistant is disabled in this deployment.")
